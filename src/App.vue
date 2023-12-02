@@ -20,14 +20,14 @@
     </div>
     <!-- 案件列表 -->
     <div class="list">
-      <el-table :data="case_list" table-layout="fixed" height="80%" show-overflow-tooltip stripe>
-        <el-table-column prop="pid" label="案件编号" width="100" />
-        <el-table-column prop="fact" label="案件事实" width="100" />
-        <el-table-column prop="reason" label="案件原因" width="100" />
-        <el-table-column prop="result" label="案件结果" width="100" />
-        <el-table-column prop="charge" label="罪名" width="100" />
-        <el-table-column prop="article" label="法条" width="100" />
-        <el-table-column fixed="right">
+      <el-table :data="case_list" table-layout="fixed" height="80%"  show-overflow-tooltip stripe>
+        <el-table-column prop="pid" min-width="10%" label="案件编号"  />
+        <el-table-column prop="fact" min-width="15%" label="案件事实"  />
+        <el-table-column prop="reason"  min-width="15%" label="案件原因"  />
+        <el-table-column prop="result" min-width="15%" label="案件结果"  />
+        <el-table-column prop="charge" min-width="15%" label="罪名"  />
+        <el-table-column prop="article" min-width="15%" label="法条"  />
+        <el-table-column fixed="right" min-width="15%">
           <template #default="scope">
             <el-button link type="primary" size="small" @click="toCaseInfo(scope.row.pid)">查看详情</el-button>
             <el-button link type="primary" size="small" @click="toSimilarCase(scope.row.pid)">相似案件</el-button>
@@ -43,17 +43,17 @@
     </div>
 
     <!-- 案件详情弹窗 -->
-    <el-dialog v-model="showCaseInfo" title="案件详情" :destroy-on-close="true" :align-center="true">
-      <el-descriptions :column="1" :border="false">
-        <el-descriptions-item label="案件编号">{{caseInfo.pid}}</el-descriptions-item>
-        <el-descriptions-item label="全文">{{caseInfo.qw}}</el-descriptions-item>
-        <el-descriptions-item label="案件事实">{{caseInfo.fact}}</el-descriptions-item>
-        <el-descriptions-item label="案件原因">{{caseInfo.reason}}</el-descriptions-item>
-        <el-descriptions-item label="案件结果">{{caseInfo.result}}</el-descriptions-item>
-        <el-descriptions-item label="罪名">
+    <el-dialog v-model="showCaseInfo" title="案件详情"  :destroy-on-close="true" :align-center="true">
+      <el-descriptions :column="1" :border="false" size="large">
+        <el-descriptions-item label="案件编号" label-class-name="label">{{caseInfo.pid}}</el-descriptions-item>
+        <el-descriptions-item label="全文" label-class-name="label">{{caseInfo.qw}}</el-descriptions-item>
+        <el-descriptions-item label="案件事实" label-class-name="label">{{caseInfo.fact}}</el-descriptions-item>
+        <el-descriptions-item label="案件原因" label-class-name="label">{{caseInfo.reason}}</el-descriptions-item>
+        <el-descriptions-item label="案件结果" label-class-name="label">{{caseInfo.result}}</el-descriptions-item>
+        <el-descriptions-item label="罪名" label-class-name="label">
           <el-tag v-for="item in caseInfo.charge" :key="item">{{item}}</el-tag>
         </el-descriptions-item>
-        <el-descriptions-item label="法条">
+        <el-descriptions-item label="法条" label-class-name="label">
           <el-tag v-for="item in caseInfo.article" :key="item">{{item}}</el-tag>
         </el-descriptions-item>
       </el-descriptions>
@@ -62,12 +62,12 @@
     <!-- 相似案件弹窗 -->
     <el-dialog v-model="showSimilarCase" title="相似案件" :destroy-on-close="true" :align-center="true">
       <el-table :data="similarCase" table-layout="fixed" show-overflow-tooltip stripe>
-        <el-table-column prop="pid" label="案件编号" width="100" />
-        <el-table-column prop="fact" label="案件事实" width="100" />
-        <el-table-column prop="reason" label="案件原因" width="100" />
-        <el-table-column prop="result" label="案件结果" width="100" />
-        <el-table-column prop="charge" label="罪名" width="100" />
-        <el-table-column prop="article" label="法条" width="100" />          
+        <el-table-column prop="pid" label="案件编号"  />
+        <el-table-column prop="fact" label="案件事实"  />
+        <el-table-column prop="reason" label="案件原因"  />
+        <el-table-column prop="result" label="案件结果"  />
+        <el-table-column prop="charge" label="罪名"  />
+        <el-table-column prop="article" label="法条"  />          
       </el-table>
       
     </el-dialog>
@@ -138,7 +138,7 @@ const pagination = (val: number) => {
 let showCaseInfo = ref(false);
 let caseInfo = ref({})
 const toCaseInfo = (id: number) => {
-  axios.get('http://localhost:8090/candidate/detail?pid='+id.toString()).then((res) => {
+  axios.get('http://localhost:8090/candidate/detail/'+id.toString()).then((res) => {
     caseInfo.value = res.data.obj;
     showCaseInfo.value = true;
   }).catch((err) => {
@@ -163,7 +163,7 @@ const toCaseInfo = (id: number) => {
 let showSimilarCase = ref(false);
 let similarCase = ref([{}])
 const toSimilarCase = (id: number) => {
-  axios.post('http://localhost:8090/candidate/similar?pid='+id.toString()).then((res) => {
+  axios.post('http://localhost:8090/candidate/similar/'+id.toString()).then((res) => {
     similarCase.value = res.data.obj;
     showSimilarCase.value = true;
   }).catch((err) => {
@@ -179,7 +179,7 @@ const toSimilarCase = (id: number) => {
 
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 .container {
   width: 100%;
   height: 100vh;
@@ -204,5 +204,8 @@ const toSimilarCase = (id: number) => {
 .el-pagination {
   margin: 20px auto;
   justify-content: center;
+}
+.label{
+  font-size: 18px;
 }
 </style>
