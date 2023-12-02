@@ -7,10 +7,10 @@
       <el-input clearable v-model="keyword">
         <template #prepend>
           <el-select v-model="searchWay" placeholder="Select" style="width: 115px">
-            <el-option label="全类型" value="1" />
-            <el-option label="案件事实" value="2" />
-            <el-option label="案件原因" value="3" />
-            <el-option label="案件结果" value="4" />
+            <el-option label="全类型" value="all" />
+            <el-option label="案件事实" value="fact" />
+            <el-option label="案件原因" value="reason" />
+            <el-option label="案件结果" value="result" />
           </el-select>
         </template>
         <template #append>
@@ -39,7 +39,7 @@
     <!-- 分页 -->
     <div class="page">
       <el-pagination background layout="prev , next" prev-text="上一页" next-text="下一页" :page-size="10" :current-page="page"
-        :total="100" @current-change="search" />
+        :total="100" @current-change="pagination" />
     </div>
 
     <!-- 案件详情弹窗 -->
@@ -85,20 +85,20 @@ import { ElMessage } from 'element-plus';
 let keyword = ref('');
 //检索按钮回调
 const search = () => {
-  axios.post('http://localhost:8080/candidate/search', {
+  axios.post('http://localhost:8090/candidate/search', {
     keyword: keyword.value,
     searchWay: searchWay.value,
     page: page.value,
     size: 10,
   }).then((res) => {
-    case_list.value = res.data;
+    case_list.value = res.data.obj;
   }).catch((err) => {
     console.log(err);
     ElMessage.error('检索失败');
   })
 };
 //检索类型数据
-let searchWay = ref('1');
+let searchWay = ref('all');
 //案件列表数据
 let case_list = ref([{}])
 case_list.value = [{
@@ -128,15 +128,18 @@ case_list.value = [{
 ]
 //分页数据
 let page = ref(1);
+//分页回调
+const pagination = (val: number) => {
+  page.value = val;
+  search();
+}
 
 //案件详情弹窗
 let showCaseInfo = ref(false);
 let caseInfo = ref({})
 const toCaseInfo = (id: number) => {
-  axios.post('http://localhost:8080/candidate/detail', {
-    pid: id,
-  }).then((res) => {
-    caseInfo.value = res.data;
+  axios.get('http://localhost:8090/candidate/detail?pid='+id.toString()).then((res) => {
+    caseInfo.value = res.data.obj;
     showCaseInfo.value = true;
   }).catch((err) => {
     console.log(err);
@@ -160,10 +163,8 @@ const toCaseInfo = (id: number) => {
 let showSimilarCase = ref(false);
 let similarCase = ref([{}])
 const toSimilarCase = (id: number) => {
-  axios.post('http://localhost:8080/candidate/similar', {
-    pid: id,
-  }).then((res) => {
-    similarCase.value = res.data;
+  axios.post('http://localhost:8090/candidate/similar?pid='+id.toString()).then((res) => {
+    similarCase.value = res.data.obj;
     showSimilarCase.value = true;
   }).catch((err) => {
     console.log(err);
